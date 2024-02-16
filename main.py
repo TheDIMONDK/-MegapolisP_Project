@@ -68,16 +68,16 @@ def task_2():
     """ 2 задание
     """
 
-    # with open("songs.txt", "w", encoding="utf-8") as f3:
-    #     # Очистим файл
-    #     f3.truncate()
-    #
-    #     writer = csv.writer(f3, delimiter="?")
-    #
-    #     sortedData = merge(data, [], [])
-    #
-    #     print("2) ", end="")
-    #     print(sortedData)
+    with open("songs.txt", "w", encoding="utf-8") as f3:
+        # Очистим файл
+        f3.truncate()
+
+        writer = csv.writer(f3, delimiter="?")
+
+        sortedData = merge(data, [], [])
+
+        print("2) ", end="")
+        print(sortedData)
 
 
 def task_3():
@@ -105,12 +105,36 @@ def task_4():
     """ 4 задание
     """
 
-    lessArr = []
+    lessDict = {}
 
-    for i in range(0, len(data)):
-        if int(data[i][3].split(".")[2]) < 1900:
-            lessArr.append(data[i])
+    print("Артисты, чьи песни вышли ранее 1990 года:")
 
+    # Поиск артистов с датой выхода песни ранее чем 1990,
+    # а также подсчёт среднего арифметического у количества
+    # прослушиваний суммы песен артиста
+    for i in range(1, len(data)):
+        date = data[i][3]
+        year = int(date.split(".")[2])
+        if year < 1990:
+            # Среднее количество прослушиваний
+            srSumm = 0
+            srCount = 0
+            for j in range(1, len(data)):
+                # Если найден тот же артист во вложенном цикле
+                if data[j][1] == data[i][1]:
+                    srSumm += int(data[j][0])
+                    srCount += 1
+
+            print(data[i][1])
+            lessDict[data[i][1]] = (srSumm // srCount)
+
+    # Сортировка данных в словаре
+    {k: v for k, v in sorted(lessDict.items(), key=lambda item: item[1])}
+
+    if len(lessDict.items()) <= 0:
+        print("Артистов, чьи песни вышли ранее 1900 года не найдено!")
+
+    # Запись результата по среднему арифметическому в файл
     with open("songs_average.txt", "w", encoding="utf-8") as f4:
         # Очистим файл
         f4.truncate()
@@ -118,8 +142,11 @@ def task_4():
         writer = csv.writer(f4, delimiter="?")
 
         # Записываем данные
-        writer.writerow(["streams", "artist_name", "track_name", "date"])
-        writer.writerows(lessArr)
+        writer.writerow(["streams", "artist_name"])
+
+        print("\nДанные о прослушиваниях в порядке убывания записаны в файл songs_average.txt")
+        for key in lessDict.keys():
+            writer.writerow([lessDict[key], key])
 
 def task_5():
     """ 5 задание
