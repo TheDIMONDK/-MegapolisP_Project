@@ -1,7 +1,7 @@
 import csv
 
-def merge(left, right, compare):
-    """ Сортировка слиянием
+def mergeSort(arr):
+    """ Сортировка слиянием (адаптирована под алфавит)
 
     :param left: Левый массив
     :param right: Правый массив
@@ -9,24 +9,33 @@ def merge(left, right, compare):
     :return: Отсортированный массив
     """
 
-    result = []
-    i, j = 0, 0
-    while i < len(left) and j < len(right):
-        if compare(left[i], right[j]):
-            result.append(left[i])
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left = arr[:mid]
+        right = arr[mid:]
+        mergeSort(left)
+        mergeSort(right)
+
+        i = j = k = 0
+
+        while i < len(left) and j < len(right):
+            if ord(left[i][1][0]) < ord(right[j][1][0]):
+                arr[k] = left[i]
+                i += 1
+            else:
+                arr[k] = right[j]
+                j += 1
+            k += 1
+
+        while i < len(left):
+            arr[k] = left[i]
             i += 1
-        else:
-            result.append(right[j])
+            k += 1
+
+        while j < len(right):
+            arr[k] = right[j]
             j += 1
-
-    while i < len(left):
-        result.append(left[i])
-        i += 1
-    while j < len(right):
-        result.append(right[j])
-        j += 1
-
-    return result
+            k += 1
 
 
 data = []
@@ -48,7 +57,7 @@ def task_1():
         if row[1] == arName:
             curArData.append(row)
 
-    with open("songs_artist.csv", "w", encoding="utf-8") as f2:
+    with open("songs_artist.csv", "w", encoding="utf-8", newline='') as f2:
         # Очистим файл
         f2.truncate()
 
@@ -68,13 +77,17 @@ def task_2():
     """ 2 задание
     """
 
-    with open("songs.txt", "w", encoding="utf-8") as f3:
+    with open("songs.txt", "w", encoding="utf-8", newline='') as f3:
         # Очистим файл
         f3.truncate()
 
         writer = csv.writer(f3, delimiter="?")
 
-        sortedData = merge(data, [], [])
+        sortedData = data.copy()
+        mergeSort(sortedData)
+
+        writer.writerow(["streams", "artist_name", "track_name", "date"])
+        writer.writerows(sortedData)
 
         print("2) ", end="")
         print(sortedData)
@@ -135,7 +148,7 @@ def task_4():
         print("Артистов, чьи песни вышли ранее 1900 года не найдено!")
 
     # Запись результата по среднему арифметическому в файл
-    with open("songs_average.txt", "w", encoding="utf-8") as f4:
+    with open("songs_average.txt", "w", encoding="utf-8", newline='') as f4:
         # Очистим файл
         f4.truncate()
 
